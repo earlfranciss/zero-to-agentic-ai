@@ -10,9 +10,24 @@ client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY"),
 )
 
-response = client.responses.create(
-    model=os.getenv("OPENROUTER_MODEL"),
-    input="Explain what is an LLM Model is in simple terms."
-)
+model = os.getenv("OPENROUTER_MODEL")
 
-print(response.output_text)
+print("AI Playground")
+print(f"Model: {model}")
+print("Type 'exit' to quit the program.\n")
+
+running = True
+
+while running:
+    user_message = input("You: ")
+
+    if user_message.lower() == "exit":
+        running = False
+        print("Goodbye!")
+    else:
+        response = client.responses.create(
+            model=model,
+            input=user_message
+        )
+
+        print(f"\nAI: {response.output_text}\n")
