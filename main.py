@@ -1,6 +1,13 @@
 import os
 
-from openai import OpenAI
+from openai import ( 
+    OpenAI,
+    AuthenticationError,
+    RateLimitError,
+    APITimeoutError,
+    APIConnectionError,
+    APIStatusError,
+)
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -56,12 +63,31 @@ while running:
             "content": user_message
         })
 
-        response = client.chat.completions.create(
-            model=model,
-            messages=conversation_history
-        )
-        
-        ai_message = response.choices[0].message.content
+        try:
+            response = client.chat.completions.create(
+                model=model,
+                messages=conversation_history
+            )
+
+            ai_message = response.choices[0].message.content
+
+        except AuthenticationError:
+            print("Error: Check your API key.")
+
+        except RateLimitError:
+            print("Error: API rate limit or quota exceeded.")
+
+        except APITimeoutError:
+            print("Error: Request timed out.")
+
+        except APIConnectionError:
+            print("Error: Could not connect to OpenRouter.")
+
+        except APIStatusError as error:
+            print(f"Error: API returned HTTP {error.status_code}.")
+
+        except Exception as error:
+            print(f"Unexpected error: {error}")
 
         conversation_history.append({
             "role": "assistant",
