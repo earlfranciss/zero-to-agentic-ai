@@ -18,6 +18,7 @@ client = OpenAI(
 )
 
 model = os.getenv("OPENROUTER_MODEL")
+MAX_INPUT_LENGTH = 500
 
 system_prompt = """
 You are a helpful AI programming tutor.
@@ -50,9 +51,25 @@ print("Type 'exit' to quit the program.\n")
 
 running = True
 
+def validate_input(user_message):
+    if not user_message:
+        print("Error: Input cannot be empty.")
+        return True
+    
+    if len(user_message) > MAX_INPUT_LENGTH:
+        print(f"Error: Input exceeds maximum length of {MAX_INPUT_LENGTH} characters.")
+        return True
+    
+    return False
+
+
 while running:
     user_message = input("You: ")
+    user_message = user_message.strip()
 
+    if validate_input(user_message):
+        continue
+    
     if user_message.lower() == "exit":
         running = False
         print("Goodbye!")
